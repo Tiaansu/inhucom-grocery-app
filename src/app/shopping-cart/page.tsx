@@ -48,16 +48,16 @@ interface ShoppingCartItem {
     quantity: number;
 }
 
-const Transition = forwardRef((
+const Transition = forwardRef(function Transition(
     props: TransitionProps & {
         children: ReactElement<any, any>;
     },
-    ref: Ref<unknown>
-) => {
+    ref: Ref<unknown>,
+) {
     return <Slide direction='up' ref={ref} {...props} />;
 });
 
-export default function page() {
+export default function Page() {
     const [groceryItems, setGroceryItems] = useState<GroceryItem[]>([]);
     const [isLoadingShoppingCartItems, setIsLoadingShoppingCartItems] = useState<boolean>(true);
     const [filteredGroceryItem, setFilteredGroceryItem] = useState<GroceryItem | null>(null);
@@ -344,7 +344,7 @@ export default function page() {
                 <DialogTitle>Checkout menu</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Here's the summary of your order.
+                        Here&apos;s the summary of your order.
                     </DialogContentText>
                     <DialogContentText mt={2}>
                         <table width={550} cellSpacing={0}>
@@ -357,7 +357,7 @@ export default function page() {
                             </thead>
                             <tbody>
                                 {shoppingCartItems.map((item) => (
-                                    <tr>
+                                    <tr key={item.dbId}>
                                         <td>{item.name}</td>
                                         <td align='right'>{item.quantity}</td>
                                         <td align='right'>₱{Intl.NumberFormat().format(item.price * item.quantity)}</td>

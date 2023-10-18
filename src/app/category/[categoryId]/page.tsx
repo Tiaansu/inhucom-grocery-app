@@ -44,12 +44,7 @@ interface ShoppingCartItem {
     quantity: number;
 }
 
-export default function page({ params }: { params: { categoryId: string }}) {
-    const categoryId = parseInt(params.categoryId);
-    if (categoryId < 0 || categoryId > 10) {
-        return notFound();
-    }
-
+export default function Page({ params }: { params: { categoryId: string }}) {
     const [isLoadingItems, setIsLoadingItems] = useState<boolean>(true);
     const [groceryItems, setGroceryItems] = useState<GroceryItem[]>([]);
     const [openAddToCart, setOpenAddToCart] = useState<boolean>(false);
@@ -65,6 +60,8 @@ export default function page({ params }: { params: { categoryId: string }}) {
             shoppingCartItems = JSON.parse(localStorage.getItem('tnan_shopping-cart')!);
         }
     }
+
+    const categoryId = parseInt(params.categoryId);
 
     useEffect(() => {
         const loadGroceryItems = async () => {
@@ -85,6 +82,10 @@ export default function page({ params }: { params: { categoryId: string }}) {
     }, [categoryId]);
 
     const router = useRouter();
+
+    if (categoryId < 0 || categoryId > 10) {
+        return notFound();
+    }
 
     const handleOpen = (item: GroceryItem) => {
         setFilteredItem(item);
