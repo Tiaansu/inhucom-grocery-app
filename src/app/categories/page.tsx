@@ -1,7 +1,8 @@
 'use client';
 
 import { getCategory } from '@/utils/getCategory';
-import { Box, Button, Grid, Typography } from '@mui/material'
+import { Box, Button, Grid, Typography } from '@mui/material';
+import { green } from '@mui/material/colors';
 
 export default function page() {
     return (
@@ -17,8 +18,8 @@ export default function page() {
             <Grid 
                 container 
                 spacing={2} 
-                sx={{ width: '100%', maxWidth: 500, height: 400, overflow: 'auto' }} 
-                columns={{ xs: 4, sm: 8, md: 12 }}
+                sx={{ width: '100%', maxWidth: 500, height: 400, overflow: 'auto', paddingBottom: 2.5 }} 
+                columns={{ xs: 2, sm: 8, md: 12 }}
             >
                 {[...Array(10).keys()].map((i) => (
                     <Grid 
@@ -27,18 +28,31 @@ export default function page() {
                         md={4} 
                         key={i} 
                         item
-                        sx={(theme) => ({
-                            backgroundColor: '#1A2027',
-                            cursor: 'pointer',
-                            ":hover": {
-                                backgroundColor: '#27303b'
-                            }
-                        })}
-                        component={'a'}
-                        href={`/category/${i}`}
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
                     >
-                        <Box sx={{ width: '125px', height: '125px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Typography marginTop={'-15%'}>
+                        <Box 
+                            sx={{ 
+                                width: 150, 
+                                maxWidth: 150, 
+                                height: 150, 
+                                maxHeight: 150, 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center', 
+                                backgroundColor: green[500],
+                                cursor: 'pointer',
+                                ':hover': {
+                                    backgroundColor: green[600]
+                                } 
+                            }}
+                            component={'a'}
+                            href={`/category/${i}`}
+                        >
+                            <Typography color='black'>
                                 {getCategory(i)}
                             </Typography>
                         </Box>

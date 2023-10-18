@@ -72,7 +72,9 @@ export default function Home() {
                         />
                     )}
                 </Box>
-                <Button variant='contained' disabled={isLoadingItems} startIcon={<ViewCompactIcon />} color='success' href='/categories'>
+                <Button variant='contained' disabled={isLoadingItems} startIcon={<ViewCompactIcon />} color='success' onClick={() => {
+                    router.push('/categories');
+                }}>
                     Browse categories
                 </Button>
                 <Button variant='contained' disabled={isLoadingItems} startIcon={<ShoppingCartIcon />} color='success' onClick={() => {
@@ -99,7 +101,7 @@ export default function Home() {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleClose} autoFocus>Ok</Button>
+                        <Button onClick={handleClose} autoFocus color='success'>Ok</Button>
                     </DialogActions>
                 </Dialog>
             </Stack>
