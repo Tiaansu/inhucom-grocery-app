@@ -16,13 +16,17 @@ import {
     DialogTitle, 
     Grid, 
     Skeleton, 
+    Stack, 
     TextField, 
     Typography 
 } from '@mui/material';
 import { green } from '@mui/material/colors';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { AddShoppingCart as AddShoppingCartIcon } from '@mui/icons-material';
+import { 
+    AddShoppingCart as AddShoppingCartIcon,
+    ShoppingCart as ShoppingCartIcon
+} from '@mui/icons-material';
 
 interface GroceryItem {
     id: string;
@@ -32,8 +36,9 @@ interface GroceryItem {
     price: number;
 };
 
-interface ShoppingCartItems {
+interface ShoppingCartItem {
     id: number;
+    dbId: string;
     name: string;
     price: number;
     quantity: number;
@@ -51,7 +56,9 @@ export default function page({ params }: { params: { categoryId: string }}) {
     const [enteredQuantity, setEnteredQuantity] = useState<number>(0);
     const [selectedItem, setSelectedItem] = useState<string>('');
     const [filteredItem, setFilteredItem] = useState<GroceryItem | null>(null);
-    let shoppingCartItems: ShoppingCartItems[] = [];
+    const [openCheckoutNoticeDialog, setOpenCheckoutNoticeDialog] = useState<boolean>(false);
+
+    let shoppingCartItems: ShoppingCartItem[] = [];
 
     if (typeof window !== 'undefined') {
         if (localStorage.getItem('tnan_shopping-cart') !== null) {
@@ -77,6 +84,8 @@ export default function page({ params }: { params: { categoryId: string }}) {
         loadGroceryItems()
     }, [categoryId]);
 
+    const router = useRouter();
+
     const handleOpen = (item: GroceryItem) => {
         setFilteredItem(item);
 
@@ -86,6 +95,10 @@ export default function page({ params }: { params: { categoryId: string }}) {
     const handleClose = () => {
         setOpenAddToCart(false);
         resetStates();
+    };
+
+    const handleNoticeCheckoutClose = () => {
+        setOpenCheckoutNoticeDialog(false);
     };
 
     const resetStates = () => {
@@ -213,7 +226,7 @@ export default function page({ params }: { params: { categoryId: string }}) {
                                 </DialogContent>
                                 <DialogActions>
                                     <Button 
-                                        onClick={async () => {
+                                        onClick={() => {
                                             const wantToContinue = confirm(`Want to add ${filteredItem.name} with ${enteredQuantity} quantity to your shopping cart? It will add ₱${Intl.NumberFormat().format(filteredItem.price * enteredQuantity)} to your shopping cart's total price.`);
 
                                             if (wantToContinue) {
@@ -225,6 +238,7 @@ export default function page({ params }: { params: { categoryId: string }}) {
                                                 } else {
                                                     const newShoppingCartItem = {
                                                         id: shoppingCartItems.length,
+                                                        dbId: filteredItem.id,
                                                         name: filteredItem.name,
                                                         price: filteredItem.price,
                                                         quantity: enteredQuantity,
@@ -239,7 +253,7 @@ export default function page({ params }: { params: { categoryId: string }}) {
                                         color='success'
                                         disabled={enteredQuantity <= 0 || enteredQuantity > filteredItem.stocks}
                                     >
-                                        Next
+                                        Add to cart
                                     </Button>
                                 </DialogActions>
                             </Dialog>
@@ -248,9 +262,38 @@ export default function page({ params }: { params: { categoryId: string }}) {
                     
                 )}
             </Grid>
-            <Button sx={{ width: '100%', maxWidth: 700 }} href='/categories' variant='contained' color='success'>
-                Go back to categories
-            </Button>
+            <Stack spacing={2} sx={{ width: '100%', maxWidth: 700 }}>
+                <Button href='/categories' variant='contained' color='success'>
+                    Go back to categories
+                </Button>
+                <Button variant='contained' disabled={isLoadingItems} startIcon={<ShoppingCartIcon />} color='success' onClick={() => {
+                    if (localStorage.getItem('tnan_shopping-cart') === null) {
+                        setOpenCheckoutNoticeDialog(true);
+                    } else {
+                        router.push('/shopping-cart');
+                    }
+                }}>
+                    View shopping cart
+                </Button>
+                <Dialog
+                    open={openCheckoutNoticeDialog}
+                    onClose={handleNoticeCheckoutClose}
+                    aria-labelledby='alert-dialog-title'
+                    aria-describedby='alert-dialog-description'
+                >
+                    <DialogTitle id='alert-dialog-title'>
+                        {'Tindahan ni Aling Nena'}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id='alert-dialog-description'>
+                            Your shopping cart is empty. Please add items first to proceed.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleNoticeCheckoutClose} autoFocus color='success'>Ok</Button>
+                    </DialogActions>
+                </Dialog>
+            </Stack>
         </main>
     )
 }

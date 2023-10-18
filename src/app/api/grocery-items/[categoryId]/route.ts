@@ -1,11 +1,27 @@
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
+interface ShoppingCartItem {
+    id: number;
+    dbId: string;
+    name: string;
+    price: number;
+    quantity: number;
+}
+
 export const GET = async (req: NextRequest, { params }: { params: { categoryId: string }}) => {
-    const prisma = new PrismaClient();
+    let prisma: PrismaClient | null = null;
+    const seachParams = req.nextUrl.searchParams;
+    
     try {
+        prisma = new PrismaClient();
         const categoryId = parseInt(params.categoryId);
-        if (categoryId !== -1 && (categoryId < -1 || categoryId > 10)) {
+
+        if (Boolean(seachParams.get('isPage')) && categoryId === -1) {
+            throw new Error('Invalid categoryId');
+        }
+
+        if (categoryId < -1 || categoryId > 10) {
             throw new Error('Invalid categoryId');
         }
 
@@ -21,39 +37,54 @@ export const GET = async (req: NextRequest, { params }: { params: { categoryId: 
             });
         }
 
-        prisma.$disconnect();
-
         return new NextResponse(JSON.stringify(data), { status: 200 });
     } catch (err) {
         return new NextResponse('Failed to load the items on the specified category.', { status: 200 });
     } finally {
-        prisma.$disconnect();
+        if (prisma) {
+            prisma.$disconnect();
+        }
     }
 };
 
-export const PATCH = async (req: NextRequest) => {
-    const prisma = new PrismaClient();
-    try {
-        const {
-            id, enteredQuantity
-        }: {
-            id: string;
-            enteredQuantity: number
-        } = await req.json();
+export const PATCH = async (req: NextRequest, { params }: { params: { categoryId: string }}) => {
+    let prisma: PrismaClient | null = null;
+    const seachParams = req.nextUrl.searchParams;
 
-        await prisma.groceryItems.update({
-            where: {
-                id
-            },
-            data: {
-                stocks: -enteredQuantity
-            }
-        });
+    try {
+        const categoryId = parseInt(params.categoryId);
+        prisma = new PrismaClient();
+
+        if (Boolean(seachParams.get('isPage')) && categoryId === -1) {
+            throw new Error('Invalid categoryId');
+        }
+
+        if (categoryId < -1 || categoryId > 10) {
+            throw new Error('Invalid categoryId');
+        }
+
+        const shoppingCartItems: ShoppingCartItem[] = await req.json();
+        const transactions = [];
+
+        for (const item of shoppingCartItems) {
+            transactions.push(prisma.groceryItems.update({
+                where: {
+                    id: item.dbId
+                },
+                data: {
+                    stocks: -item.quantity
+                }
+            }));
+        }
+
+        await Promise.all(transactions);
 
         return new NextResponse('Successfully updated the data on the database.', { status: 200 });
     } catch (err) {
         return new NextResponse('Failed to update the data on the database.', { status: 200 });
     } finally {
-        prisma.$disconnect();
+        if (prisma) {
+            prisma.$disconnect();
+        }
     }
 };

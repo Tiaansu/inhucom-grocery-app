@@ -6,7 +6,9 @@ import { CacheProvider as DefaultCacheProvider } from '@emotion/react';
 import type { EmotionCache, Options as OptionsOfCreateCache } from '@emotion/cache';
 
 export type NextAppDirEmotionCacheProviderProps = {
+    /** This is the options passed to createCache() from 'import createCache from "@emotion/cache"' */
     options: Omit<OptionsOfCreateCache, 'insertionPoint'>;
+    /** By default <CacheProvider /> from 'import { CacheProvider } from "@emotion/react"' */
     CacheProvider?: (props: {
         value: EmotionCache;
         children: React.ReactNode;
@@ -14,6 +16,7 @@ export type NextAppDirEmotionCacheProviderProps = {
     children: React.ReactNode;
 };
 
+// Adapted from https://github.com/garronej/tss-react/blob/main/src/next/appDir.tsx
 export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionCacheProviderProps) {
     const { options, CacheProvider = DefaultCacheProvider, children } = props;
 
@@ -69,7 +72,7 @@ export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionC
         return (
             <React.Fragment>
                 {globals.map(({ name, style }) => (
-                    <style 
+                    <style
                         key={name}
                         data-emotion={`${registry.cache.key}-global ${name}`}
                         // eslint-disable-next-line react/no-danger
@@ -77,15 +80,15 @@ export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionC
                     />
                 ))}
                 {styles && (
-                    <style 
+                    <style
                         data-emotion={dataEmotionAttribute}
                         // eslint-disable-next-line react/no-danger
                         dangerouslySetInnerHTML={{ __html: styles }}
                     />
                 )}
             </React.Fragment>
-        )
+        );
     });
 
-    return <CacheProvider value={registry.cache}>{children}</CacheProvider>
-} 
+    return <CacheProvider value={registry.cache}>{children}</CacheProvider>;
+}
