@@ -106,19 +106,19 @@ export const PUT = async (req: NextRequest) => {
     try {
         const prisma = new PrismaClient();
 
+        const deleteQueries: any[] = [];
         for (const category in items) {
-            await prisma.groceryItems.deleteMany({
+            deleteQueries.push(prisma.groceryItems.deleteMany({
                 where: {
                     category: parseInt(category)
                 }
-            });
+            }));
         }
 
-        const data: any[] = [];
-        const queries: any[] = [];
+        const insertQueries: any[] = [];
         for (const category in items) {
             for (const item of items[category]) {
-                queries.push(prisma.groceryItems.create({
+                insertQueries.push(prisma.groceryItems.create({
                     data: {
                         name: `${item[0]}`,
                         category: parseInt(category),
@@ -126,13 +126,13 @@ export const PUT = async (req: NextRequest) => {
                         stocks: Math.floor(Math.random() * (250 - 1) + 1)
                     }
                 }));
-                data.push({ name: item[0] });
             }
         }
+        
+        await Promise.all(deleteQueries);
+        await Promise.all(insertQueries);
 
-        await Promise.all(queries);
-
-        return new NextResponse(JSON.stringify(data), { status: 200 });
+        return new NextResponse('Ok', { status: 200 });
     } catch (err) {
         console.log({ err });
         return new NextResponse('Failed to load grocery items', { status: 500 });
