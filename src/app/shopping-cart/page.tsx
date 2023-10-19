@@ -78,6 +78,10 @@ export default function Page() {
         }
     }
 
+    if (!shoppingCartItems.length) {
+        return router.push('/');
+    }
+
     useEffect(() => {
         const loadGroceryItems = async () => {
             try {
