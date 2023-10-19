@@ -74,7 +74,7 @@ export const PATCH = async (req: NextRequest, { params }: { params: { categoryId
             });
 
             if (data === null) {
-                continue
+                continue;
             }
             transactions.push(prisma.groceryItems.update({
                 where: {
