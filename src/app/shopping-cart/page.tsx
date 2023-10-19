@@ -30,7 +30,7 @@ import {
 import { green } from '@mui/material/colors';
 import { ReactElement, Ref, forwardRef, useEffect, useState } from 'react';
 import { TransitionProps } from '@mui/material/transitions';
-import { useRouter } from 'next/navigation';
+import { RedirectType, redirect, useRouter } from 'next/navigation';
 
 interface GroceryItem {
     id: string;
@@ -75,8 +75,6 @@ export default function Page() {
     if (typeof window !== 'undefined') {
         if (localStorage.getItem('tnan_shopping-cart') !== null) {
             shoppingCartItems = JSON.parse(localStorage.getItem('tnan_shopping-cart')!);
-        } else {
-            router.push('/');
         }
     }
 
@@ -97,6 +95,10 @@ export default function Page() {
 
         loadGroceryItems()
     }, []);
+
+    if (shoppingCartItems.length <= 0) {
+        redirect('/', RedirectType.push);
+    }
 
     const handleOpen = (item: ShoppingCartItem) => {
         setFilteredShoppingCartItem(item);
