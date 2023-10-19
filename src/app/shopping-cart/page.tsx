@@ -75,6 +75,8 @@ export default function Page() {
     if (typeof window !== 'undefined') {
         if (localStorage.getItem('tnan_shopping-cart') !== null) {
             shoppingCartItems = JSON.parse(localStorage.getItem('tnan_shopping-cart')!);
+        } else {
+            router.push('/');
         }
     }
 
@@ -95,10 +97,6 @@ export default function Page() {
 
         loadGroceryItems()
     }, []);
-
-    if (!shoppingCartItems.length) {
-        return router.push('/');
-    }
 
     const handleOpen = (item: ShoppingCartItem) => {
         setFilteredShoppingCartItem(item);
