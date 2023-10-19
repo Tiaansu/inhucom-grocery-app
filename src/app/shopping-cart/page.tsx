@@ -78,10 +78,6 @@ export default function Page() {
         }
     }
 
-    if (!shoppingCartItems.length) {
-        return router.push('/');
-    }
-
     useEffect(() => {
         const loadGroceryItems = async () => {
             try {
@@ -99,6 +95,10 @@ export default function Page() {
 
         loadGroceryItems()
     }, []);
+
+    if (!shoppingCartItems.length) {
+        return router.push('/');
+    }
 
     const handleOpen = (item: ShoppingCartItem) => {
         setFilteredShoppingCartItem(item);
