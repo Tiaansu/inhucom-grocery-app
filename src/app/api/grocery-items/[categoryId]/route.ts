@@ -11,13 +11,13 @@ interface ShoppingCartItem {
 
 export const GET = async (req: NextRequest, { params }: { params: { categoryId: string }}) => {
     let prisma: PrismaClient | null = null;
-    const seachParams = req.nextUrl.searchParams;
+    const searchParams = req.nextUrl.searchParams;
     
     try {
         prisma = new PrismaClient();
         const categoryId = parseInt(params.categoryId);
 
-        if (Boolean(seachParams.get('isPage')) && categoryId === -1) {
+        if (Boolean(searchParams.get('isPage')) && categoryId === -1) {
             throw new Error('Invalid categoryId');
         }
 
@@ -36,7 +36,7 @@ export const GET = async (req: NextRequest, { params }: { params: { categoryId: 
                 }
             });
         }
-
+        
         return new NextResponse(JSON.stringify(data), { status: 200 });
     } catch (err) {
         return new NextResponse('Failed to load the items on the specified category.', { status: 200 });
@@ -67,12 +67,21 @@ export const PATCH = async (req: NextRequest, { params }: { params: { categoryId
         const transactions = [];
 
         for (const item of shoppingCartItems) {
+            const data = await prisma.groceryItems.findFirst({
+                where: {
+                    id: item.dbId
+                }
+            });
+
+            if (data === null) {
+                continue;
+            }
             transactions.push(prisma.groceryItems.update({
                 where: {
                     id: item.dbId
                 },
                 data: {
-                    stocks: -item.quantity
+                    stocks: data.stocks -= item.quantity
                 }
             }));
         }

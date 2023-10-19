@@ -33,9 +33,9 @@ export default function Home() {
         try {
             setIsLoadingItems(true);
 
-            const res = await fetch('/api/load-grocery-items');
+            const res = await fetch('/api/load-grocery-items', { method: 'PUT' });
 
-            console.log(res);
+            console.log(await res.text());
         } catch (error) { 
             console.error(error);
         } finally {

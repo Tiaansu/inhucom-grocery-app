@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
-export const GET = async (req: NextRequest) => {
+export const PUT = async (req: NextRequest) => {
     const items = [
         [
             ["Mangoes",                 35],
@@ -114,9 +114,9 @@ export const GET = async (req: NextRequest) => {
             });
         }
 
+        const data: any[] = [];
         for (const category in items) {
             for (const item of items[category]) {
-
                 await prisma.groceryItems.create({
                     data: {
                         name: `${item[0]}`,
@@ -125,10 +125,11 @@ export const GET = async (req: NextRequest) => {
                         stocks: Math.floor(Math.random() * (250 - 1) + 1)
                     }
                 });
+                data.push({ name: item[0] });
             }
         }
 
-        return new NextResponse('Success', { status: 200 });
+        return new NextResponse(JSON.stringify(data), { status: 200 });
     } catch (err) {
         console.log({ err });
         return new NextResponse('Failed to load grocery items', { status: 500 });
