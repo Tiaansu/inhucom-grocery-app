@@ -81,7 +81,13 @@ export default function Home() {
                     if (localStorage.getItem('tnan_shopping-cart') === null) {
                         setOpen(true);
                     } else {
-                        router.push('/shopping-cart');
+                        const value: any[] = JSON.parse(localStorage.getItem('tnan_shopping-cart')!);
+
+                        if (!value.length) {
+                            setOpen(true);
+                        } else {
+                            router.push('/shopping-cart');
+                        }
                     }
                 }}>
                     View shopping cart

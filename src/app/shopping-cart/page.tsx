@@ -73,7 +73,7 @@ export default function Page() {
     const router = useRouter();
     
     if (typeof window !== 'undefined') {
-        if (localStorage.getItem('tnan_shopping-cart') !== null) {
+        if (localStorage.getItem('tnan_shopping-cart') !== null || localStorage.getItem('tnan_shopping-cart')) {
             shoppingCartItems = JSON.parse(localStorage.getItem('tnan_shopping-cart')!);
         }
     }
