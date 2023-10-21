@@ -50,7 +50,7 @@ export default function Home() {
                     Tindahan ni Aling Nena
                 </Typography>
                 <Typography variant='subtitle2' gutterBottom align='center'>
-                    Made with 💖 by Marlon & Jericho.
+                    Made with ❤ by Marlon & Jericho.
                 </Typography>
             </Box>
             <Stack spacing={2} sx={{ width: '100%', maxWidth: 500, mt: 5 }}>
